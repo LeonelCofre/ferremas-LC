@@ -49,11 +49,9 @@ Luego abre http://localhost:5000 e ingresa con `cliente / cliente123`.
 
 ```bash
 cd backend  && python -m pytest -q     # 14 pruebas
-cd frontend && python -m pytest -q     #  5 pruebas
+cd frontend && python -m pytest -q     #  8 pruebas
 ```
 
 ## Integrantes
 
 - Leonel Cofré
-- [Integrante 2]
-- [Integrante 3]
