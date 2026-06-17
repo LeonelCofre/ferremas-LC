@@ -42,3 +42,4 @@ th{background:#eef3f8;color:var(--navy)}
 .result-icon{font-size:54px;text-align:center}
 footer{color:var(--muted);text-align:center;padding:26px;font-size:13px}
 .muted{color:var(--muted)}
+tr.low td{background:#fdecea}

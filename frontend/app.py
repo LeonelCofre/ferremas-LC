@@ -54,11 +54,14 @@ def login():
     data, err = api.login(request.form.get("usuario"), request.form.get("password"))
     if err:
         flash(err, "error")
-    elif data["usuario"]["rol"] != "cliente":
-        flash("Solo los clientes pueden iniciar sesión en la tienda.", "error")
-    else:
-        session["user"] = data["usuario"]
-        flash(f"¡Bienvenido, {data['usuario']['nombre']}!", "ok")
+        return redirect(request.referrer or url_for("index"))
+    usuario = data["usuario"]
+    session["user"] = usuario
+    flash(f"¡Bienvenido, {usuario['nombre']}!", "ok")
+    # Los perfiles internos (vendedor, bodeguero, contador, admin) acceden a su
+    # panel de gestión; el cliente continúa en la tienda.
+    if usuario["rol"] != "cliente":
+        return redirect(url_for("panel"))
     return redirect(request.referrer or url_for("index"))
 
 
@@ -198,6 +201,32 @@ def perfil():
         flash("Inicia sesión para ver tu perfil.", "error")
         return redirect(url_for("index"))
     return render_template("perfil.html")
+
+
+# ─────────────────────────── panel interno por rol ───────────────────────────
+@app.route("/panel")
+def panel():
+    """Panel de gestión para perfiles internos (vendedor, bodeguero, contador,
+    admin). Toda la información proviene del Backend API (productos y divisa);
+    el front no accede a la base de datos directamente."""
+    user = session.get("user")
+    if not user:
+        flash("Inicia sesión con un perfil interno para acceder al panel.", "error")
+        return redirect(url_for("index"))
+    if user["rol"] == "cliente":
+        return redirect(url_for("perfil"))
+
+    productos, err = api.productos()
+    productos = productos or []
+    # Inventario valorizado (precio * stock) para vendedor / contador / admin.
+    valor_inventario = sum((p.get("precio", 0) * (p.get("stock") or 0)) for p in productos)
+    # Productos con stock bajo (< 20), foco del bodeguero.
+    stock_bajo = [p for p in productos if (p.get("stock") or 0) < 20]
+    # El contador ve el inventario también convertido a dólares (Banco Central).
+    div, _ = api.divisa("USD", valor_inventario)
+    return render_template("panel.html", rol=user["rol"], productos=productos,
+                           valor_inventario=valor_inventario, stock_bajo=stock_bajo,
+                           divisa=div, error=err)
 
 
 @app.route("/health")

@@ -12,7 +12,11 @@
     <nav>
       <a href="{{ url_for('index') }}">Catálogo</a>
       {% if usuario %}
-        <a href="{{ url_for('perfil') }}">{{ usuario.nombre.split(' ')[0] }}</a>
+        {% if usuario.rol and usuario.rol != 'cliente' %}
+          <a href="{{ url_for('panel') }}">Panel ({{ usuario.rol }})</a>
+        {% else %}
+          <a href="{{ url_for('perfil') }}">{{ usuario.nombre.split(' ')[0] }}</a>
+        {% endif %}
         <a href="{{ url_for('logout') }}">Salir</a>
       {% else %}
         <a href="{{ url_for('registro') }}">Crear cuenta</a>

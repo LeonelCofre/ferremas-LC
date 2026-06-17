@@ -1,0 +1,75 @@
+{% extends "base.html" %}
+{% block title %}Panel {{ rol }} — FERREMAS{% endblock %}
+{% block content %}
+<div class="hero">
+  <h1>Panel de {{ rol }}</h1>
+  <p>Gestión interna de FERREMAS. La información proviene del Backend API.</p>
+</div>
+
+{% if error %}
+<div class="flash error">⚠️ {{ error }} — verifica que el Backend API esté en ejecución (puerto 5001).</div>
+{% endif %}
+
+{# ---------------- Vendedor / Admin: catálogo y ventas ---------------- #}
+{% if rol in ('vendedor', 'admin') %}
+<div class="panel">
+  <h3>Catálogo / Ventas</h3>
+  <p>Inventario valorizado total:
+     <strong>${{ '{:,.0f}'.format(valor_inventario).replace(',', '.') }} CLP</strong></p>
+  <table>
+    <thead><tr><th>Código</th><th>Producto</th><th>Marca</th><th>Precio</th><th>Stock</th></tr></thead>
+    <tbody>
+      {% for p in productos %}
+      <tr>
+        <td>{{ p.codigo }}</td>
+        <td>{{ p.nombre }}</td>
+        <td>{{ p.marca }}</td>
+        <td>${{ '{:,.0f}'.format(p.precio).replace(',', '.') }}</td>
+        <td>{{ p.stock }}</td>
+      </tr>
+      {% else %}
+      <tr><td colspan="5" class="muted">Sin productos para mostrar.</td></tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+{% endif %}
+
+{# ---------------- Bodeguero / Admin: control de inventario ---------------- #}
+{% if rol in ('bodeguero', 'admin') %}
+<div class="panel">
+  <h3>Inventario — Stock bajo (&lt; 20 unidades)</h3>
+  {% if stock_bajo %}
+  <table>
+    <thead><tr><th>Código</th><th>Producto</th><th>Categoría</th><th>Stock</th></tr></thead>
+    <tbody>
+      {% for p in stock_bajo %}
+      <tr class="low">
+        <td>{{ p.codigo }}</td><td>{{ p.nombre }}</td>
+        <td>{{ p.categoria }}</td><td>{{ p.stock }}</td>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+  {% else %}
+  <p class="muted">No hay productos con stock bajo. Inventario saludable.</p>
+  {% endif %}
+</div>
+{% endif %}
+
+{# ---------------- Contador / Admin: finanzas ---------------- #}
+{% if rol in ('contador', 'admin') %}
+<div class="panel">
+  <h3>Finanzas</h3>
+  <div class="tot"><span>Valor total del inventario</span>
+    <strong>${{ '{:,.0f}'.format(valor_inventario).replace(',', '.') }} CLP</strong></div>
+  {% if divisa %}
+  <div class="tot"><span>Equivalente en dólares (Banco Central)</span>
+    <strong>{{ '{:,.2f}'.format(divisa.monto_convertido) }} USD</strong></div>
+  <p class="muted" style="font-size:12px">Tasa {{ divisa.tasa_clp }} CLP/USD · fuente: {{ divisa.fuente }}</p>
+  {% endif %}
+</div>
+{% endif %}
+
+<a class="btn sec" href="{{ url_for('index') }}">← Ir al catálogo público</a>
+{% endblock %}
