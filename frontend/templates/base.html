@@ -1,0 +1,32 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}FERREMAS{% endblock %}</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='estilo.css') }}">
+</head>
+<body>
+<header>
+  <div class="topbar">
+    <a class="brand" href="{{ url_for('index') }}">FERRE<span>MAS</span></a>
+    <nav>
+      <a href="{{ url_for('index') }}">Catálogo</a>
+      {% if usuario %}
+        <a href="{{ url_for('perfil') }}">{{ usuario.nombre.split(' ')[0] }}</a>
+        <a href="{{ url_for('logout') }}">Salir</a>
+      {% else %}
+        <a href="{{ url_for('registro') }}">Crear cuenta</a>
+      {% endif %}
+      <a href="{{ url_for('carrito') }}">🛒 Carrito <span class="cart-badge">{{ cart_count }}</span></a>
+    </nav>
+  </div>
+</header>
+<div class="container">
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% for cat, msg in messages %}<div class="flash {{ cat }}">{{ msg }}</div>{% endfor %}
+  {% endwith %}
+  {% block content %}{% endblock %}
+</div>
+<footer>FERREMAS — Sistema de comercio electrónico · Integración de Plataformas (ASY5131)</footer>
+</body>
+</html>

@@ -1,0 +1,60 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="hero">
+  <h1>Bienvenido a FERREMAS</h1>
+  <p>Herramientas, materiales de construcción y equipos de seguridad de las mejores marcas.</p>
+</div>
+{% if error %}<div class="flash error">⚠️ {{ error }} — verifica que el Backend API esté en ejecución (puerto 5001).</div>{% endif %}
+<div class="layout">
+  <aside>
+    {% if not usuario %}
+    <div class="panel">
+      <h3>Iniciar sesión</h3>
+      <form method="post" action="{{ url_for('login') }}">
+        <label>Usuario</label><input name="usuario" required>
+        <label>Contraseña</label><input type="password" name="password" required>
+        <button class="btn blue" style="margin-top:12px;width:100%">Entrar</button>
+      </form>
+      <p class="muted" style="font-size:12px;margin-top:8px">¿No tienes cuenta?
+        <a href="{{ url_for('registro') }}">Regístrate</a></p>
+    </div>
+    {% endif %}
+    <div class="panel">
+      <h3>Categorías</h3>
+      <ul class="cat-list">
+        <li><a href="{{ url_for('index') }}" class="{{ 'active' if not categoria_sel }}">Todas</a></li>
+        {% for c in categorias %}
+        <li><a href="{{ url_for('index', categoria_id=c.id) }}"
+               class="{{ 'active' if categoria_sel==c.id }}">{{ c.nombre }}</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+    <div class="panel">
+      <h3>Suscríbete</h3>
+      <p class="muted" style="font-size:12px">Recibe ofertas y un {{ desc_porc|int }}% de descuento en compras de más de {{ desc_min }} artículos.</p>
+      <form method="post" action="{{ url_for('suscribir') }}">
+        <input type="email" name="correo" placeholder="tu@correo.cl" required>
+        <button class="btn" style="margin-top:10px;width:100%">Recibir ofertas</button>
+      </form>
+    </div>
+  </aside>
+  <main>
+    <div class="grid">
+      {% for p in productos %}
+      <div class="card">
+        <div class="ph"></div>
+        <div class="marca">{{ p.marca }}</div>
+        <div class="nom">{{ p.nombre }}</div>
+        <div class="precio">${{ '{:,.0f}'.format(p.precio).replace(',', '.') }}</div>
+        <div class="stock">{{ 'Stock: ' ~ p.stock if p.stock else 'Sin stock' }}</div>
+        <form method="post" action="{{ url_for('carrito_agregar', pid=p.id) }}">
+          <button class="btn" {{ 'disabled' if not p.stock }}>Agregar al carrito</button>
+        </form>
+      </div>
+      {% else %}
+      <p class="muted">No hay productos para mostrar.</p>
+      {% endfor %}
+    </div>
+  </main>
+</div>
+{% endblock %}

@@ -1,0 +1,58 @@
+{% extends "base.html" %}
+{% block title %}Mi compra — FERREMAS{% endblock %}
+{% block content %}
+<h2>Mi compra</h2>
+{% if not detalle %}
+  <p class="muted">Tu carrito está vacío. <a href="{{ url_for('index') }}">Ver catálogo</a></p>
+{% else %}
+<div class="layout" style="grid-template-columns:1fr 340px">
+  <div class="panel">
+    <table>
+      <tr><th>Producto</th><th>Precio</th><th>Cant.</th><th>Subtotal</th><th></th></tr>
+      {% for d in detalle %}
+      <tr>
+        <td><strong>{{ d.p.nombre }}</strong><br><span class="muted" style="font-size:12px">{{ d.p.marca }}</span></td>
+        <td>${{ '{:,.0f}'.format(d.p.precio).replace(',', '.') }}</td>
+        <td>{{ d.cantidad }}</td>
+        <td>${{ '{:,.0f}'.format(d.subtotal).replace(',', '.') }}</td>
+        <td><form method="post" action="{{ url_for('carrito_eliminar', pid=d.p.id) }}">
+          <button class="btn sec" style="padding:5px 9px">✕</button></form></td>
+      </tr>
+      {% endfor %}
+    </table>
+  </div>
+  <div>
+    <div class="panel">
+      <h3>Resumen</h3>
+      <div class="tot"><span>Artículos</span><span>{{ t.items }}</span></div>
+      <div class="tot"><span>Subtotal</span><span>${{ '{:,.0f}'.format(t.subtotal).replace(',', '.') }}</span></div>
+      {% if t.descuento %}
+      <div class="tot"><span>Descuento <span class="badge-desc">{{ desc_porc|int }}%</span></span>
+        <span>−${{ '{:,.0f}'.format(t.descuento).replace(',', '.') }}</span></div>
+      {% else %}
+      <div class="tot muted" style="font-size:12px"><span>Descuento desde {{ desc_min+1 }} artículos</span><span>—</span></div>
+      {% endif %}
+      <div class="tot big"><span>Total</span><span>${{ '{:,.0f}'.format(t.total).replace(',', '.') }}</span></div>
+    </div>
+    <div class="panel">
+      <h3>Finalizar compra</h3>
+      {% if not usuario %}
+        <p class="flash error">Inicia sesión para pagar.</p>
+      {% else %}
+      <form method="post" action="{{ url_for('checkout') }}">
+        <label>Tipo de entrega</label>
+        <select name="tipo_entrega"><option value="retiro">Retiro en tienda</option>
+          <option value="despacho">Despacho a domicilio</option></select>
+        <label>Medio de pago</label>
+        <select name="medio"><option value="webpay">Tarjeta (Webpay)</option>
+          <option value="transferencia">Transferencia</option></select>
+        <button class="btn" style="margin-top:14px;width:100%">Pagar ahora</button>
+      </form>
+      {% endif %}
+      <form method="post" action="{{ url_for('carrito_vaciar') }}" style="margin-top:8px">
+        <button class="btn sec" style="width:100%">Vaciar carrito</button></form>
+    </div>
+  </div>
+</div>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+{% block title %}{{ p.nombre }} — FERREMAS{% endblock %}
+{% block content %}
+<div class="panel center">
+  <div class="ph" style="height:180px"></div>
+  <div class="marca">{{ p.marca }} · {{ p.categoria }}</div>
+  <h2>{{ p.nombre }}</h2>
+  <div class="precio">${{ '{:,.0f}'.format(p.precio).replace(',', '.') }}</div>
+  <p class="stock">Código {{ p.codigo }} · Stock: {{ p.stock }}</p>
+  <form method="post" action="{{ url_for('carrito_agregar', pid=p.id) }}" class="inline">
+    <input type="number" name="cantidad" value="1" min="1" style="width:80px">
+    <button class="btn">Agregar al carrito</button>
+  </form>
+</div>
+{% endblock %}

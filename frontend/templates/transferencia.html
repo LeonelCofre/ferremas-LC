@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Transferencia — FERREMAS{% endblock %}
+{% block content %}
+<div class="panel center">
+  <h3>Datos para transferencia</h3>
+  <p class="muted">Realiza la transferencia por el monto total y envía el comprobante a {{ datos.correo }}.</p>
+  <table>
+    <tr><th>Banco</th><td>{{ datos.banco }}</td></tr>
+    <tr><th>Tipo de cuenta</th><td>{{ datos.tipo_cuenta }}</td></tr>
+    <tr><th>N.º de cuenta</th><td>{{ datos.numero_cuenta }}</td></tr>
+    <tr><th>RUT</th><td>{{ datos.rut }}</td></tr>
+    <tr><th>Titular</th><td>{{ datos.titular }}</td></tr>
+    <tr><th>Correo</th><td>{{ datos.correo }}</td></tr>
+    <tr><th>Monto</th><td><strong>${{ '{:,.0f}'.format(datos.monto).replace(',', '.') }}</strong></td></tr>
+  </table>
+  <a class="btn" style="margin-top:14px;display:block" href="{{ url_for('index') }}">Volver a la tienda</a>
+</div>
+{% endblock %}

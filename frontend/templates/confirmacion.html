@@ -1,0 +1,18 @@
+{% extends "base.html" %}
+{% block title %}Resultado del pago — FERREMAS{% endblock %}
+{% block content %}
+<div class="panel center" style="text-align:center">
+  <div class="result-icon">{{ '✅' if ok else '❌' }}</div>
+  <h2 style="color:{{ '#1f9d55' if ok else '#c0392b' }}">{{ 'Pago aprobado' if ok else 'Pago no completado' }}</h2>
+  <p>{{ mensaje }}</p>
+  {% if pedido %}
+  <table style="margin-top:10px">
+    <tr><th>Pedido</th><td>#{{ pedido.id }}</td></tr>
+    <tr><th>Estado</th><td>{{ pedido.estado }}</td></tr>
+    <tr><th>Entrega</th><td>{{ pedido.tipo_entrega }}</td></tr>
+    <tr><th>Total</th><td>${{ '{:,.0f}'.format(pedido.total).replace(',', '.') }}</td></tr>
+  </table>
+  {% endif %}
+  <a class="btn" style="margin-top:16px;display:block" href="{{ url_for('index') }}">Volver a la tienda</a>
+</div>
+{% endblock %}

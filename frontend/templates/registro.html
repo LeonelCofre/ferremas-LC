@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+{% block title %}Crear cuenta — FERREMAS{% endblock %}
+{% block content %}
+<div class="panel center">
+  <h3>Crear cuenta</h3>
+  <form method="post">
+    <label>Nombre completo</label><input name="nombre" value="{{ form.nombre or '' }}" required>
+    <label>Usuario</label><input name="usuario" value="{{ form.usuario or '' }}" required>
+    <label>Correo</label><input type="email" name="correo" value="{{ form.correo or '' }}" required>
+    <label>Teléfono</label><input name="telefono" value="{{ form.telefono or '' }}">
+    <label>Contraseña</label><input type="password" name="password" required>
+    <label style="display:flex;gap:8px;align-items:center;margin-top:10px">
+      <input type="checkbox" name="suscrito" style="width:auto"> Quiero recibir ofertas y descuentos</label>
+    <button class="btn" style="margin-top:14px;width:100%">Crear cuenta</button>
+  </form>
+</div>
+{% endblock %}
